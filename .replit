@@ -1,2 +1,2 @@
 language = "python3"
-run = "bash ./runserver.sh"
+run = "bash ./runserver2.sh"
