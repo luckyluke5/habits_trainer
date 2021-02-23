@@ -23,7 +23,13 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(TaskDone)
 class TaskDoneAdmin(admin.ModelAdmin):
-    list_display = ("task", "doneDate", "predict")
+    list_display = ("task", "done_date", "predict","delay","mean_interval")
 
     def predict(self, obj: TaskDone):
         return obj.predict_next_date()
+
+    def delay(self, obj: TaskDone):
+        return obj.delay()
+
+    def mean_interval(self, obj: TaskDone):
+        return obj.mean_interval()
