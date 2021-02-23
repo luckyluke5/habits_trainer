@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from habits_trainer.models import Task, TaskFeedback, TaskDone
+from habits_trainer.models import Task, TaskFeedback
+from habits_trainer.models.taskdone import TaskDone
 
 # admin.site.register(Task)
 admin.site.register(TaskFeedback)

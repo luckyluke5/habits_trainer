@@ -1,14 +1,12 @@
 import statistics
-from datetime import timedelta, datetime, timezone
-# from time import
+from datetime import datetime, timedelta, timezone
 from typing import List
 
+from django.contrib.auth.models import User
 from django.db import models
 
-from django.contrib.auth.models import User
 
-
-# Create your models here.
+# from habits_trainer.models.taskfeedback import TaskFeedback
 
 
 class Task(models.Model):
@@ -45,14 +43,6 @@ class Task(models.Model):
 
         else:
             return None
-
-    def compute_new_interval(self):
-
-        if self.taskfeedback_set.latest("date").feedback == TaskFeedback.Behavior.DONE:
-            self.interval = self.mean_interval()
-        elif self.taskfeedback_set.latest("date").feedback == TaskFeedback.Behavior.LATER:
-            self.interval *= 2
-
 
     def predict_next_date(self):
         try:
@@ -107,42 +97,3 @@ class Task(models.Model):
     #             result += 1
     #
     #     return result
-
-
-class TaskFeedback(models.Model):
-    class Behavior(models.TextChoices):
-        DONE = 'DONE'
-        # SOON = 'SOON', _('Soon (Just a few days)')
-        LATER = 'LATER'
-
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    feedback = models.CharField(max_length=10, choices=Behavior.choices, default=Behavior.DONE)
-    date = models.DateTimeField()
-
-
-class TaskDone(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    done_date = models.DateTimeField(null=True)
-
-    # predicted_next_date = models.DateTimeField(null=True)
-
-    # actual_interval = models.FloatField()
-
-    def __str__(self):
-        return " ".join([self.task.name.__str__(), self.done_date.__str__()])
-
-    def predict_next_date(self) -> datetime:
-        if self.task.mean_interval(self.done_date):
-            return self.done_date + self.task.mean_interval(self.done_date)
-
-    def delay(self):
-        prediction_at_last_done_date = self.task.last_done_task_before(self.done_date).predict_next_date()
-        if prediction_at_last_done_date:
-
-            return self.done_date - prediction_at_last_done_date
-        else:
-            return None
-
-    def mean_interval(self):
-
-        return self.task.mean_interval(self.done_date)
