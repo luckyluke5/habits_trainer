@@ -1,23 +1,23 @@
-{{ task }}
-<br>
+{% extends "habits_trainer/base.html" %}
+{% block content %}
+    {{ task.name }}
+    <br>
+    {{ task.targetInterval }}
+    <br>
+    {{ task.user }}
+    <br>
+    {{ task.nextDoDate }}
+    <br>
+    {{ task.meanInterval }}
+    <br>
 
+    <a href="{% url  'habits_trainer:task_done' task.id %}">Erledigt(heute)</a>
+    <br>
+    <a href="{% url  'habits_trainer:task_snoze' task.id %}">Verschieben</a>
+    <br>
+    <a href="{% url  'habits_trainer:task_edit' task.id %}">Bearbeiten</a>
 
-{{ task.name }}
-<br>
-{{ task.targetInterval }}
-<br>
-{{ task.user }}
-<br>
-{{ task.nextDoDate }}
-<br>
-{{ task.meanInterval }}
-<br>
-
-<a href="{% url  'habits_trainer:task_done' task.id %}">Erledigt(heute)</a>
-<br>
-<a href="{% url  'habits_trainer:task_snoze' task.id %}">Verschieben</a>
-<br>
-<a href="{% url  'habits_trainer:task_edit' task.id %}">Bearbeiten</a>
+{% endblock %}
 
 
 

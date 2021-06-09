@@ -1,12 +1,14 @@
-<h2>Task</h2>
+{% extends "habits_trainer/base.html" %}
+{% block content %}
+    <h2>Task</h2>
 
-<ul>
+    <ul>
 
-    {% for object in object_list %}
+        {% for object in object_list %}
 
-        <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
+            <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
 
-    {% endfor %}
+        {% endfor %}
 
 </ul>
 
@@ -14,3 +16,4 @@
 
 <a href="{% url  'habits_trainer:task_add' %}">New Task</a>
 <br>
+{% endblock %}
