@@ -12,7 +12,14 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 
-class AllTaskView(generic.ListView):
+class UserView(generic.ListView):
+    model = Task
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+
+class AllTaskView(UserView):
     model = Task
     template_name = "habits_trainer/task_list.html"
 
@@ -24,7 +31,7 @@ class AllTaskView(generic.ListView):
         # return sorted(super().get_queryset(), key=lambda object: object.predict_next_date)
 
 
-class ActuallTaskView(generic.ListView):
+class ActuallTaskView(UserView):
     model = Task
     template_name = "habits_trainer/task_list.html"
 
@@ -52,3 +59,10 @@ def taskSnoze(request, task_id):
     task.task_snoze()
 
     return redirect(task)
+
+
+class UserSpecificCreate(generic.CreateView):
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(UserSpecificCreate, self).form_valid(form)
