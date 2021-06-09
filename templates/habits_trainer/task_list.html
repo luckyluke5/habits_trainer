@@ -1,5 +1,11 @@
-{{ object_list }}
+<ul>
 
+    {% for object in object_list %}
 
+        <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
+
+    {% endfor %}
+
+</ul>
 
 hallo

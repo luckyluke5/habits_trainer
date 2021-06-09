@@ -4,22 +4,31 @@ from typing import List
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
+
+from ..models import taskdone
+from ..models import taskfeedback
 
 
-# from habits_trainer.models.taskfeedback import TaskFeedback
+# from models import TaskFeedback
 
 
 class Task(models.Model):
     name = models.CharField(max_length=50)
-    interval = models.FloatField(default=7.0)
-    targetInterval = models.FloatField(default=7.0, editable=True)
+    # interval = models.DurationField(blank=True,default=timedelta(days=7))
+    targetInterval = models.DurationField(blank=True, default=timedelta(days=7))
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    nextDoDate = models.DateTimeField(blank=True, null=True)
+    meanInterval = models.DurationField(blank=True, null=True, default=timedelta(days=7))
 
     def __str__(self):
         return self.name.__str__()
 
-    def mean_interval(self, to_date=datetime.now()):
-        ordered_task_done = self.taskdone_set.filter(done_date__lte=to_date).order_by('done_date')
+    def get_absolute_url(self):
+        return reverse('habits_trainer:task_details', args=[self.pk])
+
+    def mean_interval(self) -> None:
+        ordered_task_done = self.taskdone_set.filter(done_date__lte=datetime.now()).order_by('done_date')
 
         last_date = None
 
@@ -38,28 +47,35 @@ class Task(models.Model):
 
             # return sum(intervals)/len(intervals)
             # [interval.days for interval in intervals]
-            print(mean_in_seconds)
-            return timedelta(seconds=mean_in_seconds)
+            # print(mean_in_seconds)
+            self.meanInterval = timedelta(seconds=mean_in_seconds)
 
         else:
-            return None
+            self.meanInterval = None
 
-    def predict_next_date(self):
-        try:
-            next_date = self.taskdone_set.latest("done_date").predict_next_date()
+    def predict_next_date(self) -> None:
 
-        except:
-            return datetime.now(timezone.utc)
+        last_done_date = self.last_done_task().done_date
 
-        return next_date
+        if self.meanInterval:
 
-        # if next_date:
-        #    return next_date
-        # else:
-        #    datetime.now()
+            if self.meanInterval > self.targetInterval:
+                reduced_mean_interval = (self.meanInterval - self.targetInterval) * 0.8 + self.targetInterval
 
-    def last_done_task_before(self, to_date=datetime.now()):
-        return self.taskdone_set.filter(done_date__lt=to_date).latest('done_date')
+
+            else:
+                reduced_mean_interval = self.targetInterval
+        else:
+            reduced_mean_interval = self.targetInterval
+        additional_delay_interval = reduced_mean_interval * (1.25 ** self.number_of_delays_since_last_done())
+        print(additional_delay_interval)
+        if last_done_date:
+            self.nextDoDate = last_done_date + additional_delay_interval
+        else:
+            self.nextDoDate = datetime.now(timezone.utc)
+
+    def last_done_task(self) -> taskdone.TaskDone:
+        return self.taskdone_set.filter(done_date__lt=datetime.now()).latest('done_date')
 
     # def usual_delay(self):
     #     ordered_task_done = self.taskdone_set.order_by('done_date')
@@ -85,15 +101,36 @@ class Task(models.Model):
     #     else:
     #         return None
 
-    # def number_of_delays_since_last_done(self) -> int:
-    #     feedbacks = self.taskfeedback_set.order_by("-date")
-    #
-    #     result = 0
-    #
-    #     for feedback in feedbacks:
-    #         if feedback.feedback == TaskFeedback.Behavior.DONE:
-    #             break
-    #         else:
-    #             result += 1
-    #
-    #     return result
+    def number_of_delays_since_last_done(self) -> int:
+        feedbacks: List[taskfeedback.TaskFeedback] = self.taskfeedback_set \
+            .filter(date__gt=self.last_done_task().done_date) \
+            .order_by("-date")
+
+        result = 0
+
+        # feedback: TaskFeedback
+        for feedback in feedbacks:
+            # from habits_trainer.models import TaskFeedback.Beha
+            if feedback.is_feedback_typ_later():
+                result += 1
+            else:
+                break
+
+        return result
+
+    def task_done_at_date(self):
+        task_done = taskdone.TaskDone(task=self, done_date=datetime.now())
+        task_done.save()
+
+        self.mean_interval()
+        self.predict_next_date()
+        self.save()
+
+    def task_snoze(self):
+        task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
+                                              date=datetime.now())
+        task_done.save()
+
+        # self.mean_interval()
+        self.predict_next_date()
+        self.save()

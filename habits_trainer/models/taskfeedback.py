@@ -1,6 +1,7 @@
 from django.db import models
 
-from habits_trainer.models.task import Task
+
+# from . import Task
 
 
 class TaskFeedback(models.Model):
@@ -9,6 +10,9 @@ class TaskFeedback(models.Model):
         # SOON = 'SOON', _('Soon (Just a few days)')
         LATER = 'LATER'
 
-    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    task = models.ForeignKey("Task", on_delete=models.CASCADE)
     feedback = models.CharField(max_length=10, choices=Behavior.choices, default=Behavior.DONE)
     date = models.DateTimeField()
+
+    def is_feedback_typ_later(self) -> bool:
+        return self.feedback == TaskFeedback.Behavior.LATER

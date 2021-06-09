@@ -1,3 +1,3 @@
-from .task import Task
-from .taskdone import TaskDone
-from .taskfeedback import TaskFeedback
+from .task import *
+from .taskdone import *
+from .taskfeedback import *
