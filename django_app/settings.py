@@ -96,6 +96,24 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Je4fomzxBP57M0fv',
+#         'HOST': '35.246.168.194',
+#         'PORT': '3306',
+#         # 'OPTIONS': {
+#         #     'sslmode': 'verify-ca',  # leave this line intact
+#         #     'sslrootcert': '/your/path/to/server-ca.pem',
+#         #     "sslcert": "/your/path/to/client-cert.pem",
+#         #     "sslkey": "/your/path/to/client-key.pem",
+#         # }
+#     }
+# }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
