@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -79,22 +79,22 @@ WSGI_APPLICATION = 'django_app.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'MeD3ydbDj8p66dwe',
-        'HOST': '34.107.77.26',
-        'PORT': '5432',
-        # 'OPTIONS': {
-        #     'sslmode': 'verify-ca',  # leave this line intact
-        #     'sslrootcert': '/your/path/to/server-ca.pem',
-        #     "sslcert": "/your/path/to/client-cert.pem",
-        #     "sslkey": "/your/path/to/client-key.pem",
-        # }
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'MeD3ydbDj8p66dwe',
+#         'HOST': '34.107.77.26',
+#         'PORT': '5432',
+#         # 'OPTIONS': {
+#         #     'sslmode': 'verify-ca',  # leave this line intact
+#         #     'sslrootcert': '/your/path/to/server-ca.pem',
+#         #     "sslcert": "/your/path/to/client-cert.pem",
+#         #     "sslkey": "/your/path/to/client-key.pem",
+#         # }
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -112,6 +112,58 @@ DATABASES = {
 #         # }
 #     }
 # }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'habits_tracker',
+#         'USER': 'lucas',
+#         'PASSWORD': 'system',
+#         #'HOST': '35.246.246.174',
+#         #'PORT': '3306',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': '/cloudsql/habit-trainer-316412:europe-west3:db-habits-trainer-mysql',
+#             #'NAME': 'polls',
+#             #'USER': '<your-database-user>',
+#             #'PASSWORD': '<your-database-password>',
+#         # 'OPTIONS': {
+#         #     'sslmode': 'verify-ca',  # leave this line intact
+#         #     'sslrootcert': '/your/path/to/server-ca.pem',
+#         #     "sslcert": "/your/path/to/client-cert.pem",
+#         #     "sslkey": "/your/path/to/client-key.pem",
+#         # }
+#     }
+# }
+
+# [START db_setup]
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/habit-trainer-316412:europe-west3:db-habits-trainer-mysql',
+            'USER': 'lucas',
+            'PASSWORD': 'system',
+            'NAME': 'habits_tracker',
+        }
+    }
+else:
+    # Running locally so connect to either a local MySQL instance or connect
+    # to Cloud SQL via the proxy.  To start the proxy via command line:
+    #    $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
+    # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'NAME': 'habits_tracker',
+            'USER': 'lucas',
+            'PASSWORD': 'system',
+        }
+    }
+# [END db_setup]
 
 
 # Password validation
@@ -148,6 +200,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 ALLOWED_HOSTS = ['*']
 # X_FRAME_OPTIONS = '*'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+# Google App Engine: set static root for local static files
+# https://cloud.google.com/appengine/docs/flexible/python/serving-static-files
+STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
