@@ -28,7 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Deploy an App Engine app
         id: deploy-app
-        uses: google-github-actions/deploy-appengine@@main
+        uses: google-github-actions/deploy-appengine@main
         with:
           
           deliverables: habits_trainer/app.yaml
