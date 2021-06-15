@@ -8,6 +8,10 @@
 
             <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
 
+        {% empty %}
+
+            <p>Du bist auf dem aktuellen Stand. Es sind keine Aufgaben mehr offen.</p>
+
         {% endfor %}
 
     </ul>

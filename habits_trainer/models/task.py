@@ -24,6 +24,22 @@ class Task(models.Model):
     def __str__(self):
         return self.name.__str__()
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+        if self.taskdone_set.count() == 0:
+            self.task_done_at_date()
+        else:
+            self.mean_interval()
+            self.predict_next_date()
+
+    def start(self):
+        if self.taskdone_set.count() == 0:
+            self.task_done_at_date()
+        else:
+            self.mean_interval()
+            self.predict_next_date()
+
     def get_absolute_url(self):
         return reverse('habits_trainer:task_details', args=[self.pk])
 
