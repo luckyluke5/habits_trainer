@@ -27,10 +27,10 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Deploy an App Engine app
-      id: deploy-app
-      uses: google-github-actions/deploy-appengine@v0.1.0
-      with:
-        #project: ${{ secrets.gcp_project }}
-        deliverables: habits_trainer/app.yaml
-        credentials: ${{ secrets.gcp_credentials }}
+        id: deploy-app
+        uses: google-github-actions/deploy-appengine@v0.1.0
+        with:
+          #project: ${{ secrets.gcp_project }}
+          deliverables: habits_trainer/app.yaml
+          credentials: ${{ secrets.gcp_credentials }}
 
