@@ -1,10 +1,16 @@
 {% extends "habits_trainer/base.html" %}
+
 {% block content %}
     <h2>Task</h2>
 
     <ul>
+        {% load tz %}
+        {% get_current_timezone as TIME_ZONE %}
 
         {% for object in object_list %}
+
+
+
 
             <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
 

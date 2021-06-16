@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
+from django.utils import timezone
 from django.views import generic
 
 from .models.task import Task
@@ -26,6 +25,7 @@ class AllTaskView(UserView):
     # ordering = "predict_next_date"
 
     def get_queryset(self):
+        # timezone.activate("Europe/Paris")
         return super().get_queryset().order_by('nextDoDate')
 
         # return sorted(super().get_queryset(), key=lambda object: object.predict_next_date)
@@ -38,7 +38,8 @@ class ActuallTaskView(UserView):
     # ordering = "predict_next_date"
 
     def get_queryset(self):
-        return super().get_queryset().order_by('nextDoDate').filter(nextDoDate__lte=datetime.now())
+        # timezone.activate("Europe/Paris")
+        return super().get_queryset().order_by('nextDoDate').filter(nextDoDate__lte=timezone.now())
 
         # filtered = filter(lambda object: object.predict_next_date <= datetime.now(timezone.utc),
         #                  super().get_queryset())

@@ -1,10 +1,11 @@
 import statistics
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import List
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from ..models import taskdone
 from ..models import taskfeedback
@@ -25,26 +26,28 @@ class Task(models.Model):
         return self.name.__str__()
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+
         super().save(force_insert, force_update, using, update_fields)
 
         if self.taskdone_set.count() == 0:
             self.task_done_at_date()
-        else:
-            self.mean_interval()
-            self.predict_next_date()
+
 
     def start(self):
+
         if self.taskdone_set.count() == 0:
             self.task_done_at_date()
         else:
             self.mean_interval()
             self.predict_next_date()
+
+        self.save()
 
     def get_absolute_url(self):
         return reverse('habits_trainer:task_details', args=[self.pk])
 
     def mean_interval(self) -> None:
-        ordered_task_done = self.taskdone_set.filter(done_date__lte=datetime.now()).order_by('done_date')
+        ordered_task_done = self.taskdone_set.filter(done_date__lte=timezone.now()).order_by('done_date')
 
         last_date = None
 
@@ -91,7 +94,7 @@ class Task(models.Model):
             self.nextDoDate = datetime.now(timezone.utc)
 
     def last_done_task(self) -> taskdone.TaskDone:
-        return self.taskdone_set.filter(done_date__lt=datetime.now()).latest('done_date')
+        return self.taskdone_set.filter(done_date__lt=timezone.now()).latest('done_date')
 
     # def usual_delay(self):
     #     ordered_task_done = self.taskdone_set.order_by('done_date')
@@ -135,7 +138,7 @@ class Task(models.Model):
         return result
 
     def task_done_at_date(self):
-        task_done = taskdone.TaskDone(task=self, done_date=datetime.now())
+        task_done = taskdone.TaskDone(task=self, done_date=timezone.now())
         task_done.save()
 
         self.mean_interval()
@@ -144,7 +147,7 @@ class Task(models.Model):
 
     def task_snoze(self):
         task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
-                                              date=datetime.now())
+                                              date=timezone.now())
         task_done.save()
 
         # self.mean_interval()
