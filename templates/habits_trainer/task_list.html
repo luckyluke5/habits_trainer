@@ -3,24 +3,42 @@
 {% block content %}
     <h2>Task</h2>
 
-    <ul>
-        {% load tz %}
-        {% get_current_timezone as TIME_ZONE %}
+    <table style="width:100%">
+        <tr>
+            <th>Task</th>
+            <th>Erledigt</th>
+            <th>Verschieben</th>
+        </tr>
 
-        {% for object in object_list %}
 
 
 
 
-            <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {{ object.nextDoDate }}</li>
 
-        {% empty %}
 
-            <p>Du bist auf dem aktuellen Stand. Es sind keine Aufgaben mehr offen.</p>
+        {% for task in object_list %}
+            <tr>
 
+
+                <td><a href="{{ task.get_absolute_url }}">{{ task.name }}</a></td>
+                <td><a href="{% url  'habits_trainer:task_done' task.id %}?next={{ request.path }}">(+)</a></td>
+                <td><a href="{% url  'habits_trainer:task_snoze' task.id %}?next={{ request.path }}">(-)</a></td>
+
+                {% empty %}
+
+                <p></p>
+
+                <td>Du bist auf dem aktuellen Stand. Es sind keine Aufgaben mehr offen.</td>
+                <td>(+)</td>
+                <td>(-)</td>
+
+            </tr>
         {% endfor %}
 
-    </ul>
+
+    </table>
+
+
 
     <hr>
 

@@ -11,10 +11,11 @@
     {% block sidebar %}
         <ul>
             <li>aktueller Nutzer: {{ user }}</li>
+            <li><a href="{% url  'admin:index' %}">Admin</a></li>
             <li><a href="{% url  'habits_trainer:allTask' %}">Alle Tasks</a></li>
             <li><a href="{% url  'habits_trainer:actuallTask' %}">Aktuelle Task</a></li>
-            <li><a href="{% url  'password_change' %}">Password ändern 😛</a></li>
-            <li><a href="{% url  'logout' %}">Logout</a></li>
+            <li><a href="{% url  'admin:password_change' %}">Password ändern 😛</a></li>
+            <li><a href="{% url  'admin:logout' %}">Logout</a></li>
         </ul>
     {% endblock %}
 </div>

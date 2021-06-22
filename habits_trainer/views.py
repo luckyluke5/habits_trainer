@@ -47,19 +47,25 @@ class ActuallTaskView(UserView):
 
 
 def taskDone(request, task_id):
-    print(task_id)
+    # print(task_id)
 
     task = get_object_or_404(Task, pk=task_id)
     task.task_done_at_date()
 
-    return redirect(task)
+    if request.GET.get('next'):
+        return redirect(request.GET.get('next'))
+    else:
+        return redirect(task)
 
 
 def taskSnoze(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     task.task_snoze()
 
-    return redirect(task)
+    if request.GET.get('next'):
+        return redirect(request.GET.get('next'))
+    else:
+        return redirect(task)
 
 
 class UserSpecificCreate(generic.CreateView):
