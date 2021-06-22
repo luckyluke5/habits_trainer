@@ -60,7 +60,7 @@ def taskDone(request, task_id):
 
 def taskSnoze(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
-    task.task_snoze()
+    task.task_snooze()
 
     if request.GET.get('next'):
         return redirect(request.GET.get('next'))
