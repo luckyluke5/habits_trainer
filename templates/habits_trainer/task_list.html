@@ -6,7 +6,7 @@
     <table style="width:100%">
         <tr>
             <th>Task</th>
-            <th>Do-Date</th>
+            {#            <th>Do-Date</th>#}
             <th>Erledigt</th>
             <th>Verschieben</th>
         </tr>
@@ -23,7 +23,7 @@
 
                 <td><a href="{{ task.get_absolute_url }}">{{ task.name }}</a></td>
 
-                <td>{{ task.nextDoDate }}</td>
+                {#                <td>{{ task.nextDoDate }}</td>#}
 
                 <td><a href="{% url  'habits_trainer:task_done' task.id %}?next={{ request.path }}">(+)</a></td>
                 <td><a href="{% url  'habits_trainer:task_snoze' task.id %}?next={{ request.path }}">(-)</a></td>
@@ -33,6 +33,7 @@
                 <p></p>
 
                 <td>Du bist auf dem aktuellen Stand. Es sind keine Aufgaben mehr offen.</td>
+                {#                <td></td>#}
                 <td>(+)</td>
                 <td>(-)</td>
 

@@ -18,6 +18,23 @@ class UserView(generic.ListView):
         return super().get_queryset().filter(user=self.request.user)
 
 
+class BestTaskView(UserView):
+    model = Task
+    template_name = "habits_trainer/best_task.html"
+
+    # allow_empty = True
+
+    def get_queryset(self):
+        # timezone.activate("Europe/Paris")
+        query = super().get_queryset().filter(nextDoDate__lte=timezone.now())
+
+        if query:
+
+            return query.earliest("nextDoDate")
+        else:
+            return None
+
+
 class AllTaskView(UserView):
     model = Task
     template_name = "habits_trainer/task_list.html"
@@ -50,16 +67,23 @@ def taskDone(request, task_id):
     # print(task_id)
 
     task = get_object_or_404(Task, pk=task_id)
-    task.task_done_at_date()
 
+    if not request.user == task.user:
+        return HttpResponse('Unauthorized', status=401)
+
+    task.task_done_at_date()
     if request.GET.get('next'):
         return redirect(request.GET.get('next'))
     else:
         return redirect(task)
 
 
-def taskSnoze(request, task_id):
+def taskSnooze(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
+
+    if not request.user == task.user:
+        return HttpResponse('Unauthorized', status=401)
+
     task.task_snooze()
 
     if request.GET.get('next'):

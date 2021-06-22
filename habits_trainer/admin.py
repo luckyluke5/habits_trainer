@@ -16,7 +16,7 @@ from habits_trainer.models import Task, TaskFeedback, TaskDone
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = (
-        "name", "user", "targetInterval", "meanInterval", "nextDoDate", "last_done_date", "last_snooze_date")
+        "name", "user", "targetInterval", "meanInterval", "nextDoDate", "last_done_date", "last_snooze_date", "dones")
 
     actions = ['reset']
 
@@ -28,6 +28,9 @@ class TaskAdmin(admin.ModelAdmin):
 
     def last_done_date(self, obj: Task):
         return obj.last_done_task().done_date
+
+    def dones(self, obj: Task):
+        return obj.taskdone_set.count()
 
     def reset(self, request, queryset):
         [task.start() for task in queryset]

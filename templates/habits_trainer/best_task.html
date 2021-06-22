@@ -1,0 +1,18 @@
+{% extends "habits_trainer/base.html" %}
+{% block content %}
+    <h2>Your Best Choice</h2>
+    {% with task=object_list %}
+        {% if task %}
+            <h3>Task: {{ task.name }}</h3>
+            <br>
+            <a href="{% url  'habits_trainer:task_done' task.id %}?next={{ request.path }}">Erledigt(heute)</a>
+            <br>
+            <a href="{% url  'habits_trainer:task_snoze' task.id %}?next={{ request.path }}">Verschieben</a>
+        {% else %}<p>Du bist auf dem aktuellen Stand. Es sind keine Aufgaben mehr offen.</p>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+
+
+
