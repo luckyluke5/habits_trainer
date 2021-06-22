@@ -3,10 +3,11 @@ from django.contrib import admin
 # Register your models here.
 from habits_trainer.models import Task, TaskFeedback, TaskDone
 
+
 # from habits_trainer.models.taskdone import TaskDone
 
 # admin.site.register(Task)
-admin.site.register(TaskFeedback)
+# admin.site.register(TaskFeedback)
 
 
 # admin.site.register(TaskDone)
@@ -14,7 +15,8 @@ admin.site.register(TaskFeedback)
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("name", "user", "targetInterval", "meanInterval", "nextDoDate", "last_done_date")
+    list_display = (
+        "name", "user", "targetInterval", "meanInterval", "nextDoDate", "last_done_date", "last_snooze_date")
 
     actions = ['reset']
 
@@ -41,13 +43,27 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(TaskDone)
 class TaskDoneAdmin(admin.ModelAdmin):
-    list_display = ("task", "done_date", "delay")
+    list_display = ("task", "done_date", "user")
 
     def predict(self, obj: TaskDone):
         return obj.predict_next_date()
 
-    def delay(self, obj: TaskDone):
-        return 0
+    def user(self, obj: TaskDone):
+        return obj.task.user
+
+    def mean_interval(self, obj: TaskDone):
+        return obj.mean_interval()
+
+
+@admin.register(TaskFeedback)
+class TaskFeedbackAdmin(admin.ModelAdmin):
+    list_display = ("task", "date", "user")
+
+    def predict(self, obj: TaskDone):
+        return obj.predict_next_date()
+
+    def user(self, obj: TaskDone):
+        return obj.task.user
 
     def mean_interval(self, obj: TaskDone):
         return obj.mean_interval()

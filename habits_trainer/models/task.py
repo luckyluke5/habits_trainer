@@ -1,6 +1,6 @@
 import statistics
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -31,7 +31,6 @@ class Task(models.Model):
 
         if self.taskdone_set.count() == 0:
             self.task_done_at_date()
-
 
     def start(self):
 
@@ -75,26 +74,54 @@ class Task(models.Model):
     def predict_next_date(self) -> None:
 
         last_done_date = self.last_done_task().done_date
+        last_snooze_date = self.last_snooze_date()
 
-        if self.meanInterval:
+        if not last_done_date:
+            raise ValueError('last_done_date should never be null')
 
-            if self.meanInterval > self.targetInterval:
-                reduced_mean_interval = (self.meanInterval - self.targetInterval) * 0.8 + self.targetInterval
+        if not last_snooze_date:
+            last_snooze_date = last_done_date
 
+        if last_snooze_date > last_done_date:
+            next_date = (last_snooze_date - last_done_date) * 1.25 + last_done_date
 
+            self.nextDoDate = max(self.nextDoDate, next_date)
+
+        else:
+
+            if self.meanInterval:
+
+                if self.meanInterval > self.targetInterval:
+                    reduced_mean_interval = (self.meanInterval - self.targetInterval) * 0.8 + self.targetInterval
+
+                else:
+                    reduced_mean_interval = self.targetInterval
             else:
                 reduced_mean_interval = self.targetInterval
-        else:
-            reduced_mean_interval = self.targetInterval
-        additional_delay_interval = reduced_mean_interval * (1.25 ** self.number_of_delays_since_last_done())
-        print(additional_delay_interval)
-        if last_done_date:
-            self.nextDoDate = last_done_date + additional_delay_interval
-        else:
-            self.nextDoDate = datetime.now(timezone.utc)
+
+            self.nextDoDate = last_done_date + reduced_mean_interval
+        # additional_delay_interval = reduced_mean_interval * (1.25 ** self.number_of_delays_since_last_done())
+        # print(additional_delay_interval)
+
+        # if last_done_date:
+        #
+        # else:
+        #    self.nextDoDate = datetime.now(timezone.utc)
 
     def last_done_task(self) -> taskdone.TaskDone:
         return self.taskdone_set.filter(done_date__lt=timezone.now()).latest('done_date')
+
+    def last_snooze_date(self) -> Optional[datetime]:
+        # self.taskdone_set.filter(done_date__lt=timezone.now()).latest('done_date')
+
+        last_task_feedback = self.taskfeedback_set.filter(
+            feedback__exact=taskfeedback.TaskFeedback.Behavior.LATER)
+
+        if last_task_feedback:
+
+            return last_task_feedback.latest('date').date
+        else:
+            return None
 
     # def usual_delay(self):
     #     ordered_task_done = self.taskdone_set.order_by('done_date')
@@ -129,7 +156,7 @@ class Task(models.Model):
 
         # feedback: TaskFeedback
         for feedback in feedbacks:
-            # from habits_trainer.models import TaskFeedback.Beha
+            # from habits_trainer.models import TaskFeedback
             if feedback.is_feedback_typ_later():
                 result += 1
             else:
@@ -145,7 +172,7 @@ class Task(models.Model):
         self.predict_next_date()
         self.save()
 
-    def task_snoze(self):
+    def task_snooze(self):
         task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
                                               date=timezone.now())
         task_done.save()
