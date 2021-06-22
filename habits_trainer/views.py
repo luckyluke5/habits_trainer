@@ -17,6 +17,8 @@ class UserView(generic.ListView):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
+        # return super().get_queryset().filter(user__id=2)
+
 
 class BestTaskView(UserView):
     model = Task
@@ -34,6 +36,14 @@ class BestTaskView(UserView):
         else:
             return None
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+
+        nextDoDate = super().get_queryset().earliest('nextDoDate').nextDoDate
+
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update({"nextDoDate": nextDoDate})
+
+        return context
 
 class AllTaskView(UserView):
     model = Task
