@@ -53,7 +53,7 @@ class AllTaskView(UserView):
 
     def get_queryset(self):
         # timezone.activate("Europe/Paris")
-        return super().get_queryset().order_by('nextDoDate')
+        return super().get_queryset().order_by('targetInterval')
 
         # return sorted(super().get_queryset(), key=lambda object: object.predict_next_date)
 

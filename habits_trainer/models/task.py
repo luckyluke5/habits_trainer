@@ -52,10 +52,10 @@ class Task(models.Model):
 
         intervals: List[timedelta] = []
 
-        for taskDone in ordered_task_done.all():
+        for taskDone in ordered_task_done.reverse()[:5]:
             date = taskDone.done_date
             if last_date:
-                intervals.append(date - last_date)
+                intervals.append(last_date - date)
 
             last_date = date
 
