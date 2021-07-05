@@ -15,7 +15,7 @@ urlpatterns = [
          views.UserSpecificCreate.as_view(model=models.Task, fields=['name', 'targetInterval']),
          name="task_add"),
     path('task/<slug:pk>/',
-         generic.DetailView.as_view(model=models.Task),
+         views.TaskView.as_view(),
          name="task_details"),
     path('task/<slug:task_id>/done/',
          views.taskDone,

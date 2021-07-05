@@ -46,30 +46,51 @@ class Task(models.Model):
         return reverse('habits_trainer:task_details', args=[self.pk])
 
     def mean_interval(self) -> None:
-        ordered_task_done = self.taskdone_set.filter(done_date__lte=timezone.now()).order_by('done_date')
+        intervals = self.done_intervals()
 
+        if intervals:
+
+            # [interval.total_seconds() for interval in intervals[:5]]
+
+            intervals_in_secounds = []
+
+            for interval in intervals:
+
+                if interval < self.targetInterval * 4:
+                    intervals_in_secounds.append(interval.total_seconds())
+
+            valid_intervals = min(5, len(intervals_in_secounds))
+
+            if valid_intervals > 0:
+                mean_in_seconds = statistics.mean(intervals_in_secounds)
+                mean_in_timedelta = timedelta(seconds=mean_in_seconds)
+
+                solution = (mean_in_timedelta * valid_intervals + self.targetInterval * (5 - valid_intervals)) / 5
+
+            else:
+                solution = self.targetInterval
+
+            # return sum(intervals)/len(intervals)
+            # [interval.days for interval in intervals]
+            # print(mean_in_seconds)
+            self.meanInterval = solution
+
+        else:
+            self.meanInterval = None
+
+    def done_intervals(self):
+        ordered_task_done = self.taskdone_set \
+            .filter(done_date__lte=timezone.now()) \
+            .filter(done_date__gte=timezone.now() - self.targetInterval * 10).order_by('done_date')
         last_date = None
-
         intervals: List[timedelta] = []
-
-        for taskDone in ordered_task_done.reverse()[:5]:
+        for taskDone in ordered_task_done.reverse():
             date = taskDone.done_date
             if last_date:
                 intervals.append(last_date - date)
 
             last_date = date
-
-        if intervals:
-
-            mean_in_seconds = statistics.mean([interval.total_seconds() for interval in intervals])
-
-            # return sum(intervals)/len(intervals)
-            # [interval.days for interval in intervals]
-            # print(mean_in_seconds)
-            self.meanInterval = timedelta(seconds=mean_in_seconds)
-
-        else:
-            self.meanInterval = None
+        return intervals
 
     def predict_next_date(self) -> None:
 
@@ -110,6 +131,9 @@ class Task(models.Model):
 
     def last_done_task(self) -> taskdone.TaskDone:
         return self.taskdone_set.filter(done_date__lt=timezone.now()).latest('done_date')
+
+    def last_done_date(self) -> Optional[datetime]:
+        return self.last_done_task().done_date
 
     def last_snooze_date(self) -> Optional[datetime]:
         # self.taskdone_set.filter(done_date__lt=timezone.now()).latest('done_date')

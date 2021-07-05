@@ -2,10 +2,19 @@
 {% block content %}
     {{ task.name }}
     <br>
-    {{ task.targetInterval }}
+    Target Interval: {{ task.targetInterval }}
     <br>
-    {{ task.meanInterval }}
+    Mean Interval (last 5): {{ task.meanInterval }}
     <br>
+    Last Done Date: {{ task.last_done_date }}
+    <br>
+    Last Snooze Date: {{ task.last_done_date }}
+    <hr>
+    {% for interval in intervals %}
+        {{ interval }}
+        <br>
+    {% endfor %}
+    <hr>
 
     <a href="{% url  'habits_trainer:task_done' task.id %}">Erledigt(heute)</a>
     <br>

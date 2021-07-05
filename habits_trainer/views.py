@@ -107,3 +107,16 @@ class UserSpecificCreate(generic.CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super(UserSpecificCreate, self).form_valid(form)
+
+
+class TaskView(generic.DetailView):
+    model = Task
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        object: Task = self.get_object()
+
+        context.update({"intervals": object.done_intervals()})
+
+        return context
