@@ -21,6 +21,7 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nextDoDate = models.DateTimeField(blank=True, null=True)
     meanInterval = models.DurationField(blank=True, null=True, default=timedelta(days=7))
+    acceptance = models.FloatField(blank=False, null=True, default=1)
 
     def __str__(self):
         return self.name.__str__()
@@ -39,6 +40,7 @@ class Task(models.Model):
         else:
             self.mean_interval()
             self.predict_next_date()
+            self.calculate_acceptance()
 
         self.save()
 
@@ -76,7 +78,7 @@ class Task(models.Model):
             self.meanInterval = solution
 
         else:
-            self.meanInterval = None
+            self.meanInterval = self.targetInterval
 
     def done_intervals(self):
         ordered_task_done = self.taskdone_set \
@@ -194,6 +196,7 @@ class Task(models.Model):
 
         self.mean_interval()
         self.predict_next_date()
+        self.calculate_acceptance()
         self.save()
 
     def task_snooze(self):
@@ -203,4 +206,22 @@ class Task(models.Model):
 
         # self.mean_interval()
         self.predict_next_date()
+        self.calculate_acceptance()
         self.save()
+
+    def calculate_acceptance(self):
+        task_done_set = self.taskdone_set \
+            .filter(done_date__lte=timezone.now()) \
+            .filter(done_date__gte=timezone.now() - self.targetInterval * 10)
+
+        task_snooze_set = self.taskfeedback_set \
+            .filter(feedback__exact=taskfeedback.TaskFeedback.Behavior.LATER) \
+            .filter(date__lte=timezone.now()) \
+            .filter(date__gte=timezone.now() - self.targetInterval * 10)
+
+        snoozes = task_snooze_set.count()
+        dones = task_done_set.count()
+        if snoozes + dones > 0:
+            self.acceptance = dones / (snoozes + dones)
+        else:
+            self.acceptance = 0.5

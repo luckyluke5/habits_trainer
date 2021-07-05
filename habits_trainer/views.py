@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
@@ -28,11 +29,11 @@ class BestTaskView(UserView):
 
     def get_queryset(self):
         # timezone.activate("Europe/Paris")
-        query = super().get_queryset().filter(nextDoDate__lte=timezone.now())
+        query: QuerySet = super().get_queryset().filter(nextDoDate__lte=timezone.now())
 
         if query:
 
-            return query.earliest("nextDoDate")
+            return query.order_by("acceptance", "-nextDoDate").last()
         else:
             return None
 
