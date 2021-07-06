@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 
@@ -22,6 +23,7 @@ class Task(models.Model):
     nextDoDate = models.DateTimeField(blank=True, null=True)
     meanInterval = models.DurationField(blank=True, null=True, default=timedelta(days=7))
     acceptance = models.FloatField(blank=False, null=True, default=1)
+    tenthLastDoneDate = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.name.__str__()
@@ -38,6 +40,7 @@ class Task(models.Model):
         if self.taskdone_set.count() == 0:
             self.task_done_at_date()
         else:
+            self.calculate_tenth_last_done_date()
             self.mean_interval()
             self.predict_next_date()
             self.calculate_acceptance()
@@ -83,7 +86,7 @@ class Task(models.Model):
     def done_intervals(self):
         ordered_task_done = self.taskdone_set \
             .filter(done_date__lte=timezone.now()) \
-            .filter(done_date__gte=timezone.now() - self.targetInterval * 10).order_by('done_date')
+            .filter(done_date__gte=self.tenthLastDoneDate).order_by('done_date')
         last_date = None
         intervals: List[timedelta] = []
         for taskDone in ordered_task_done.reverse():
@@ -194,6 +197,7 @@ class Task(models.Model):
         task_done = taskdone.TaskDone(task=self, done_date=timezone.now())
         task_done.save()
 
+        self.calculate_tenth_last_done_date()
         self.mean_interval()
         self.predict_next_date()
         self.calculate_acceptance()
@@ -212,12 +216,12 @@ class Task(models.Model):
     def calculate_acceptance(self):
         task_done_set = self.taskdone_set \
             .filter(done_date__lte=timezone.now()) \
-            .filter(done_date__gte=timezone.now() - self.targetInterval * 10)
+            .filter(done_date__gte=self.tenthLastDoneDate)
 
         task_snooze_set = self.taskfeedback_set \
             .filter(feedback__exact=taskfeedback.TaskFeedback.Behavior.LATER) \
             .filter(date__lte=timezone.now()) \
-            .filter(date__gte=timezone.now() - self.targetInterval * 10)
+            .filter(date__gte=self.tenthLastDoneDate)
 
         snoozes = task_snooze_set.count()
         dones = task_done_set.count()
@@ -225,3 +229,28 @@ class Task(models.Model):
             self.acceptance = dones / (snoozes + dones)
         else:
             self.acceptance = 0.5
+
+    def calculate_tenth_last_done_date(self):
+        task_done_set: QuerySet = self.taskdone_set \
+            .filter(done_date__lte=timezone.now()) \
+            .order_by("-done_date")
+
+        lastDate = None
+        counter = 0
+
+        for taskdone in task_done_set.all():
+            nextDate = taskdone.done_date
+
+            if lastDate:
+                if lastDate - nextDate < self.targetInterval * 4:
+                    counter += 1
+
+                    if counter == 10:
+                        self.tenthLastDoneDate = nextDate
+                        return
+
+            lastDate = nextDate
+
+        self.tenthLastDoneDate = task_done_set.earliest("done_date").done_date
+
+        # self.save()

@@ -17,7 +17,7 @@ from habits_trainer.models import Task, TaskFeedback, TaskDone
 class TaskAdmin(admin.ModelAdmin):
     list_display = (
         "name", "user", "targetInterval", "meanInterval", "acceptance", "nextDoDate", "last_done_date",
-        "last_snooze_date")
+        "last_snooze_date", "tenthLastDoneDate")
 
     actions = ['reset']
 
@@ -37,6 +37,11 @@ class TaskAdmin(admin.ModelAdmin):
         [task.start() for task in queryset]
 
     reset.short_description = "Reset Interval and Prediction Date"
+
+    def calc(self, request, queryset):
+        [task.calculate_tenth_last_done_date() for task in queryset]
+
+    calc.short_description = "calulate 10th last date"
 
     # def meanInterval(self, obj: Task):
     #     return obj.predict_next_date

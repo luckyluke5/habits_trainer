@@ -8,7 +8,9 @@
     <br>
     Last Done Date: {{ task.last_done_date }}
     <br>
-    Last Snooze Date: {{ task.last_done_date }}
+    Last Snooze Date: {{ task.last_snooze_date }}
+    <br>
+    Acceptance: {{ task.acceptance }}
     <hr>
     {% for interval in intervals %}
         {{ interval }}

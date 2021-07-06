@@ -3,7 +3,7 @@
     <h2>Deine nächste Aufgabe</h2>
     {% with task=object_list %}
         {% if task %}
-            <h3>{{ task.name }}</h3>
+            <h3><a href="{{ task.get_absolute_url }}">{{ task.name }}</a></h3>
             <br>
             <a href="{% url  'habits_trainer:task_done' task.id %}?next={{ request.path }}">Erledigt (jetzt)</a>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
