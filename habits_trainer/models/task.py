@@ -32,8 +32,7 @@ class Task(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-        if self.taskdone_set.count() == 0:
-            self.task_done_at_date()
+        self.start()
 
     def start(self):
 
