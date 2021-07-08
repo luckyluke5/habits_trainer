@@ -26,5 +26,6 @@ urlpatterns = [
     path('task/<slug:pk>/update/',
          generic.UpdateView.as_view(model=models.Task, fields=['name', 'targetInterval']),
          name="task_edit"),
+    path('firebase-messaging-sw.js', views.ServiceWorkerView.as_view(), name='service-worker')
 
 ]

@@ -1,9 +1,9 @@
 from django.db.models import QuerySet
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 # Create your views here.
 from django.utils import timezone
-from django.views import generic
+from django.views import generic, View
 
 from .models.task import Task
 
@@ -121,3 +121,8 @@ class TaskView(generic.DetailView):
         context.update({"intervals": object.done_intervals()})
 
         return context
+
+
+class ServiceWorkerView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'habits_trainer/service-worker.js', content_type="application/x-javascript")
