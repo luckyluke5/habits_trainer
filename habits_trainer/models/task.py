@@ -32,7 +32,10 @@ class Task(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-        self.start()
+        self.calculate_tenth_last_done_date()
+        self.mean_interval()
+        self.predict_next_date()
+        self.calculate_acceptance()
 
     def start(self):
 
