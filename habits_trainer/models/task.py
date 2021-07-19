@@ -32,20 +32,15 @@ class Task(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
+        if self.taskdone_set.count() == 0:
+            self.task_done_at_date()
+
+    def update(self):
+
         self.calculate_tenth_last_done_date()
         self.mean_interval()
         self.predict_next_date()
         self.calculate_acceptance()
-
-    def start(self):
-
-        if self.taskdone_set.count() == 0:
-            self.task_done_at_date()
-        else:
-            self.calculate_tenth_last_done_date()
-            self.mean_interval()
-            self.predict_next_date()
-            self.calculate_acceptance()
 
         self.save()
 
@@ -199,11 +194,13 @@ class Task(models.Model):
         task_done = taskdone.TaskDone(task=self, done_date=timezone.now())
         task_done.save()
 
-        self.calculate_tenth_last_done_date()
-        self.mean_interval()
-        self.predict_next_date()
-        self.calculate_acceptance()
-        self.save()
+        self.update()
+
+        # self.calculate_tenth_last_done_date()
+        # self.mean_interval()
+        # self.predict_next_date()
+        # self.calculate_acceptance()
+        # self.save()
 
     def task_snooze(self):
         task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
@@ -211,9 +208,7 @@ class Task(models.Model):
         task_done.save()
 
         # self.mean_interval()
-        self.predict_next_date()
-        self.calculate_acceptance()
-        self.save()
+        self.update()
 
     def calculate_acceptance(self):
         task_done_set = self.taskdone_set \
@@ -253,6 +248,10 @@ class Task(models.Model):
 
             lastDate = nextDate
 
-        self.tenthLastDoneDate = task_done_set.earliest("done_date").done_date
+        if task_done_set.count() > 0:
+
+            self.tenthLastDoneDate = task_done_set.earliest("done_date").done_date
+        else:
+            self.tenthLastDoneDate = timezone.now() - timedelta(days=1)
 
         # self.save()
