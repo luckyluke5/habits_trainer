@@ -1,52 +1,46 @@
-//import firebase from "firebase/app";
-//import "firebase/messaging";
+self.addEventListener('notificationclick', function (e) {
+    var notification = e.notification;
+    var primaryKey = notification.data.primaryKey;
+    var action = e.action;
 
-// See: https://github.com/microsoft/TypeScript/issues/14877
-/** @type {ServiceWorkerGlobalScope} */
-let self;
+    if (action === 'close') {
+        notification.close();
+    } else {
+        clients.openWindow('http://www.example.com');
+        notification.close();
+    }
+});
 
-function initInSw() {
-    // [START messaging_init_in_sw]
-    // Give the service worker access to Firebase Messaging.
-    // Note that you can only use Firebase Messaging here. Other Firebase libraries
-    // are not available in the service worker.
-    importScripts('https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js');
-    importScripts('https://www.gstatic.com/firebasejs/8.6.8/firebase-messaging.js');
+self.addEventListener('notificationclose', function (event) {
+    var notification = event.notification;
+    var primaryKey = notification.data.primaryKey;
 
-    // Initialize the Firebase app in the service worker by passing in
-    // your app's Firebase config object.
-    // https://firebase.google.com/docs/web/setup#config-object
-    firebase.initializeApp({
-        apiKey: "AIzaSyDqGeN35kg87RbCnMZNqXVj4Gvjfs9-_Ms",
-        authDomain: "habit-trainer-316412.firebaseapp.com",
-        projectId: "habit-trainer-316412",
-        storageBucket: "habit-trainer-316412.appspot.com",
-        messagingSenderId: "1030268063447",
-        appId: "1:1030268063447:web:620644db865b379ba82a92",
-        measurementId: "G-9M0KYCKB3Y"
-    });
+    console.log('Closed notification');
+});
 
-    // Retrieve an instance of Firebase Messaging so that it can handle background
-    // messages.
-    const messaging = firebase.messaging();
-    // [END messaging_init_in_sw]
-}
+self.addEventListener('install', function (event) {
+    // Perform install steps
+    console.log('Service Worker install');
+});
 
-function onBackgroundMessage() {
-    const messaging = firebase.messaging();
+self.addEventListener('push', function (event) {
+    // Perform install steps
 
-    // [START messaging_on_background_message]
-    messaging.onBackgroundMessage((payload) => {
-        console.log('[firebase-messaging-sw.js] Received background message ', payload);
-        // Customize notification here
-        const notificationTitle = 'Background Message Title';
-        const notificationOptions = {
-            body: 'Background Message body.',
-            icon: '/firebase-logo.png'
-        };
+    if (event.data) {
 
-        self.registration.showNotification(notificationTitle,
-            notificationOptions);
-    });
-    // [END messaging_on_background_message]
-}
+        let notification = event.data.json().notification
+
+        self.registration.showNotification(notification.title,
+            {
+                body: notification.body,
+                //icon: icon,
+                //tag: tag,
+                //data: data,
+                userVisibleOnly: true
+            });
+    } else {
+        console.log('Push event but no data')
+    }
+
+    console.log('Notification received');
+});
