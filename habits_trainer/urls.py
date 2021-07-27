@@ -17,6 +17,7 @@ urlpatterns = [
     path('task/<slug:pk>/',
          views.TaskView.as_view(),
          name="task_details"),
+
     path('task/<slug:task_id>/done/',
          views.taskDone,
          name="task_done"),

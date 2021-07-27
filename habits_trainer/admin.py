@@ -6,7 +6,7 @@ from habits_trainer.models import Task, TaskFeedback, TaskDone, Profile
 
 # from habits_trainer.models.taskdone import TaskDone
 
-# admin.site.register(Task)
+
 # admin.site.register(TaskFeedback)
 
 
@@ -21,7 +21,7 @@ class ProfileAdmin(admin.ModelAdmin):
 class TaskAdmin(admin.ModelAdmin):
     list_display = (
         "name", "user", "targetInterval", "meanInterval", "acceptance", "nextDoDate", "last_done_date",
-        "last_snooze_date", "tenthLastDoneDate")
+        "last_snooze_date", "tenthLastDoneDate", "notified")
 
     actions = ['reset']
 

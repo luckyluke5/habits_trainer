@@ -25,6 +25,8 @@ class Task(models.Model):
     acceptance = models.FloatField(blank=False, null=True, default=1)
     tenthLastDoneDate = models.DateTimeField(blank=True, null=True)
 
+    notified = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name.__str__()
 
@@ -194,6 +196,8 @@ class Task(models.Model):
         task_done = taskdone.TaskDone(task=self, done_date=timezone.now())
         task_done.save()
 
+        self.notified = False
+
         self.update()
 
         # self.calculate_tenth_last_done_date()
@@ -206,6 +210,8 @@ class Task(models.Model):
         task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
                                               date=timezone.now())
         task_done.save()
+
+        self.notified = False
 
         # self.mean_interval()
         self.update()

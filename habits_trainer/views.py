@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import generic, View
 
+from .models import Profile
 from .models.task import Task
 
 
@@ -45,6 +46,7 @@ class BestTaskView(UserView):
         context.update({"nextDoDate": nextDoDate})
 
         return context
+
 
 class AllTaskView(UserView):
     model = Task
