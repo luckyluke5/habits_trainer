@@ -26,13 +26,13 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Deploy an App Engine app
-        id: deploy-app
+
+
+      - name: Deploy an Cron Jobs
+        id: deploy-cron-jobs
         uses: google-github-actions/deploy-appengine@main
         with:
 
-          deliverables: app.yaml
+          deliverables: cron.yaml
           credentials: ${{ secrets.gcp_credentials }}
-
-
 
