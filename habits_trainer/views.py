@@ -128,3 +128,31 @@ class TaskView(generic.DetailView):
 class ServiceWorkerView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'habits_trainer/service-worker.js', content_type="application/x-javascript")
+
+
+def safe_vapid(request):
+    # if request.is_ajax():
+    #    message = "Yes, AJAX!"
+    # else:
+    #    message = "Not Ajax"
+    # return HttpResponse(message)
+
+    vapid = request.POST.get('vapid')
+    user_profile: Profile = request.user.profile
+    user_profile.vapid = vapid
+
+    user_profile.save()
+
+    return HttpResponse()
+
+
+def send_notifications(request):
+    tasks: QuerySet[Task] = Task.objects.filter(nextDoDate__lte=timezone.now()).filter(notified__exact=False)
+
+    task: Task
+    for task in tasks:
+        task.createNotificationForNextDoDate()
+        task.notified = True
+        task.save()
+
+    return HttpResponse()

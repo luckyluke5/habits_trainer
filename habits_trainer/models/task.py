@@ -1,7 +1,9 @@
+import json
 import statistics
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import requests
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
@@ -43,6 +45,7 @@ class Task(models.Model):
         self.mean_interval()
         self.predict_next_date()
         self.calculate_acceptance()
+        # self.createNotificationForNextDoDate()
 
         self.save()
 
@@ -261,3 +264,19 @@ class Task(models.Model):
             self.tenthLastDoneDate = timezone.now() - timedelta(days=1)
 
         # self.save()
+
+    def createNotificationForNextDoDate(self):
+
+        # HttpRequest(url)
+
+        auth = 'key=AAAA7-DDDtc:APA91bHbGdJ_ZEmrXB_39DYvr-6tZ9Yg25aYWqlGYnadoGXRBx60Tqwl5JRO6I2HntZ3NJWaZsyTti8XMJtMau8U6M5-in1dkaFohuPCxEM3sBpXNM4tJJqcDQOVr7PShvMSGpdXFzP-'
+
+        headers = {'Content-Type': 'application/json', 'Authorization': auth}
+        dict = {"to": self.user.profile.vapid,
+                "notification": {"title": self.name,
+                                 "body": "Deine nächste Aufgabe " + self.name + " steht für dich bereit"}}
+        # print(json.dumps(dict))
+        response = requests.post("https://fcm.googleapis.com/fcm/send", data=json.dumps(dict), headers=headers)
+        print(response)
+
+        # print(response)

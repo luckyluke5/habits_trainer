@@ -4,6 +4,7 @@
     {% load static %}
     <link rel="stylesheet" href="style.css">
     <title>{% block title %}My amazing site{% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -53,26 +54,92 @@
     };
     // Initialize Firebase
 
+
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 
     const messaging = firebase.messaging();
-    messaging.getToken({vapidKey: "BFmjHOk3Kzia-BhmKbGOQC3frgMAFfA0clPKHPjbw2o3Ll1oNqn7yMGlrmR6KhcMpzpeCd0kmzM1FjSthY8KgF8"}).then((currentToken) => {
-        if (currentToken) {
-            // Send the token to your server and update the UI if necessary
-            console.log(currentToken);
-            // ...
-        } else {
-            // Show permission request UI
-            //askPermission()
-            console.log('No registration token available. Request permission to generate one.');
-            // ...
-        }
-    }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
+
+    messaging.onMessage((payload) => {
+        console.log('Message received. ', payload);
         // ...
     });
-    ;
+
+
+    //messaging.useServiceWorker(registration)
+    //console.log(navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js'));
+    if (navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js')) {
+
+        //console.log('serviceWorker in navigator ');
+        //navigator.serviceWorker
+    }
+
+    navigator.serviceWorker.register('/firebase-messaging-sw.js').then((registration) => {
+        console.log('serviceWorker ' +
+            'registered', registration);
+
+
+    });
+
+
+    /*messaging.onMessage((payload) => {
+        //console.log('Message received. ', payload);
+        // ...
+    });*/
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+
+    function getToken() {
+
+        messaging.getToken({vapidKey: "BFmjHOk3Kzia-BhmKbGOQC3frgMAFfA0clPKHPjbw2o3Ll1oNqn7yMGlrmR6KhcMpzpeCd0kmzM1FjSthY8KgF8"}).then((currentToken) => {
+                if (currentToken) {
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'habits_trainer:safe_vapid' %}",
+                        headers: {"X-CSRFToken": csrftoken},
+                        data: {
+                            'vapid': currentToken,
+                        },
+                        success: function () {
+                            $('#message').html("<h2>Contact Form Submitted!</h2>")
+
+                        }
+
+
+                    });
+                    //console.log(currentToken);
+                    // ...
+                } else {
+                    // Show permission request UI
+                    //askPermission()
+                    console.log('No registration token available. Request permission to generate one.');
+                    // ...
+                }
+            }
+        ).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+            // ...
+        });
+
+    }
 
     testServices()
 
@@ -88,9 +155,12 @@
             console.log('Push isnt supported on this browser, disable or hide UI.');
             // Push isn't supported on this browser, disable or hide UI.
             return;
+        } else {
+            getToken()
         }
 
     }
+
 
 </script>
 

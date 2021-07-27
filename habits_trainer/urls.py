@@ -14,6 +14,14 @@ urlpatterns = [
     path('task/add/',
          views.UserSpecificCreate.as_view(model=models.Task, fields=['name', 'targetInterval']),
          name="task_add"),
+    path('task/safe_vapid/',
+         views.safe_vapid,
+         name="safe_vapid"),
+
+    path('task/send_notifications/',
+         views.send_notifications,
+         name="send_notifications"),
+
     path('task/<slug:pk>/',
          views.TaskView.as_view(),
          name="task_details"),
