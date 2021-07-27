@@ -151,8 +151,9 @@ def send_notifications(request):
 
     task: Task
     for task in tasks:
-        task.createNotificationForNextDoDate()
-        task.notified = True
-        task.save()
+        if task.user.profile.vapid:
+            task.createNotificationForNextDoDate()
+            task.notified = True
+            task.save()
 
     return HttpResponse("Ready " + str(tasks.count()))

@@ -33,6 +33,7 @@ self.addEventListener('push', function (event) {
         self.registration.showNotification(notification.title,
             {
                 body: notification.body,
+                requireInteraction: true,
                 //icon: icon,
                 //tag: tag,
                 //data: data,
