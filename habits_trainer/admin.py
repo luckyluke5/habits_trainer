@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from habits_trainer.models import Task, TaskFeedback, TaskDone
+from habits_trainer.models import Task, TaskFeedback, TaskDone, Profile
 
 
 # from habits_trainer.models.taskdone import TaskDone
@@ -11,6 +11,10 @@ from habits_trainer.models import Task, TaskFeedback, TaskDone
 
 
 # admin.site.register(TaskDone)
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "vapid")
 
 
 @admin.register(Task)
