@@ -30,7 +30,15 @@ jobs:
         id: deploy-app
         uses: google-github-actions/deploy-appengine@main
         with:
-          
+
           deliverables: app.yaml
           credentials: ${{ secrets.gcp_credentials }}
+
+      - name: Deploy an Cron Jobs
+          id: deploy-cron jobs
+          uses: google-github-actions/deploy-appengine@main
+          with:
+
+            deliverables: cron.yaml
+            credentials: ${{ secrets.gcp_credentials }}
 
