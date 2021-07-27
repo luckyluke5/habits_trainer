@@ -1,4 +1,4 @@
 cron:
   - description: "hourly notification job"
-    url: /task/send_notifications
+    url: /task/send_notifications/
     schedule: every 5 mins

@@ -155,4 +155,4 @@ def send_notifications(request):
         task.notified = True
         task.save()
 
-    return HttpResponse()
+    return HttpResponse("Ready " + str(tasks.count()))

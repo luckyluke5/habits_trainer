@@ -274,7 +274,7 @@ class Task(models.Model):
         headers = {'Content-Type': 'application/json', 'Authorization': auth}
         dict = {"to": self.user.profile.vapid,
                 "notification": {"title": self.name,
-                                 "body": "Deine nächste Aufgabe " + self.name + " steht für dich bereit"}}
+                                 "body": "Deine nächste Aufgabe '" + self.name + "' steht für dich bereit"}}
         # print(json.dumps(dict))
         response = requests.post("https://fcm.googleapis.com/fcm/send", data=json.dumps(dict), headers=headers)
         print(response)
