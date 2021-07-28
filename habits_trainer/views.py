@@ -156,4 +156,7 @@ def send_notifications(request):
             task.notified = True
             task.save()
 
+    # toilette = get_object_or_404(Task, pk=145)
+    # toilette.createNotificationForNextDoDate()
+
     return HttpResponse("Ready " + str(tasks.count()))

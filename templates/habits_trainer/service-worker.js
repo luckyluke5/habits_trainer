@@ -1,14 +1,19 @@
 self.addEventListener('notificationclick', function (e) {
     var notification = e.notification;
-    var primaryKey = notification.data.primaryKey;
+    //var primaryKey = notification.data.primaryKey;
     var action = e.action;
 
-    if (action === 'close') {
-        notification.close();
-    } else {
-        clients.openWindow('http://www.example.com');
-        notification.close();
-    }
+    var request = new Request(e.action);
+
+    fetch(request).then(response => {
+        if (!response.ok) {
+            self.registration.showNotification("Fehler bei der Bearbeitung")
+        }
+    });
+
+    //console.log(request.getAllResponseHeaders())
+
+
 });
 
 self.addEventListener('notificationclose', function (event) {
@@ -34,11 +39,13 @@ self.addEventListener('push', function (event) {
             {
                 body: notification.body,
                 requireInteraction: true,
+                actions: JSON.parse(event.data.json().data.actions),
                 //icon: icon,
                 //tag: tag,
                 //data: data,
                 userVisibleOnly: true
-            });
+            })
+        ;
     } else {
         console.log('Push event but no data')
     }

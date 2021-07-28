@@ -272,9 +272,19 @@ class Task(models.Model):
         auth = 'key=AAAA7-DDDtc:APA91bHbGdJ_ZEmrXB_39DYvr-6tZ9Yg25aYWqlGYnadoGXRBx60Tqwl5JRO6I2HntZ3NJWaZsyTti8XMJtMau8U6M5-in1dkaFohuPCxEM3sBpXNM4tJJqcDQOVr7PShvMSGpdXFzP-'
 
         headers = {'Content-Type': 'application/json', 'Authorization': auth}
+
+        actions = [{'title': 'Done', 'action': reverse("habits_trainer:task_done", kwargs={'task_id': self.pk})},
+
+                   {'title': 'Snoze', 'action': reverse("habits_trainer:task_snoze", kwargs={'task_id': self.pk})}]
+
+        # actions = [{'title': 'Done', 'action': '/tas/145/done/'},
+        #
+        #           {'title': 'Snoze', 'action': '/tas/145/snoze/'}]
+
         dict = {"to": self.user.profile.vapid,
                 "notification": {"title": self.name,
-                                 "body": "Deine nächste Aufgabe '" + self.name + "' steht für dich bereit"}}
+                                 "body": "Deine nächste Aufgabe '" + self.name + "' steht für dich bereit"},
+                "data": {"actions": json.dumps(actions)}}
         # print(json.dumps(dict))
         response = requests.post("https://fcm.googleapis.com/fcm/send", data=json.dumps(dict), headers=headers)
         print(response)
