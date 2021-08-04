@@ -24,7 +24,8 @@ self.addEventListener('notificationclose', function (event) {
 });
 
 self.addEventListener('install', function (event) {
-    // Perform install steps
+
+
     console.log('Service Worker install');
 });
 
@@ -32,6 +33,8 @@ self.addEventListener('push', function (event) {
     // Perform install steps
 
     if (event.data) {
+
+        //this.analytics.logEvent('notification_received');
 
         let notification = event.data.json().notification
 
