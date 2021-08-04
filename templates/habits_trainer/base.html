@@ -19,6 +19,9 @@
             {#            <li><a href="{% url  'habits_trainer:actuallTask' %}">Aktuelle Task</a></li>#}
             <li><a href="{% url  'admin:password_change' %}">Password ändern 😛</a></li>
             <li><a href="{% url  'admin:logout' %}">Logout</a></li>
+            <li><a href="#" id="abo_link" class="abo_link">In diesem Browser abbonieren</a></li>
+
+
         </ul>
     {% endblock %}
 </div>
@@ -30,6 +33,7 @@
 </div>
 
 <hr>
+
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script>
@@ -104,27 +108,52 @@
 
     const csrftoken = getCookie('csrftoken');
 
+    async function saveToken() {
 
-    function getToken() {
+        await getToken().then(async function (vapid) {
 
-        messaging.getToken({vapidKey: "BFmjHOk3Kzia-BhmKbGOQC3frgMAFfA0clPKHPjbw2o3Ll1oNqn7yMGlrmR6KhcMpzpeCd0kmzM1FjSthY8KgF8"}).then((currentToken) => {
+
+            console.log(vapid)
+
+            await $.ajax({
+                type: "POST",
+                url: "{% url 'habits_trainer:safe_vapid' %}",
+                headers: {"X-CSRFToken": csrftoken},
+                data: {
+                    'vapid': vapid,
+                },
+                success: function () {
+                    //console.log("erfolgreichge abonierung")
+                    //$('#message').html("<h2>Contact Form Submitted!</h2>")
+                    new Notification('Erfolgreiche Abbonierung');
+                    //notification.show()
+                    //navigator.registration.showNotification("Erfolgreiche Abonierung")
+
+                }
+
+
+            });
+
+
+        }).then(response => updateLinkLabel())
+
+
+    }
+
+
+    async function getToken() {
+
+        var token
+
+        await messaging.getToken({
+            vapidKey:
+                "BFmjHOk3Kzia-BhmKbGOQC3frgMAFfA0clPKHPjbw2o3Ll1oNqn7yMGlrmR6KhcMpzpeCd0kmzM1FjSthY8KgF8"
+        }).then((currentToken) => {
                 if (currentToken) {
 
-
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'habits_trainer:safe_vapid' %}",
-                        headers: {"X-CSRFToken": csrftoken},
-                        data: {
-                            'vapid': currentToken,
-                        },
-                        success: function () {
-                            $('#message').html("<h2>Contact Form Submitted!</h2>")
-
-                        }
+                    token = currentToken
 
 
-                    });
                     //console.log(currentToken);
                     // ...
                 } else {
@@ -138,6 +167,10 @@
             console.log('An error occurred while retrieving token. ', err);
             // ...
         });
+
+        //console.log(token)
+        return token
+
 
     }
 
@@ -155,15 +188,93 @@
             console.log('Push isnt supported on this browser, disable or hide UI.');
             // Push isn't supported on this browser, disable or hide UI.
             return;
-        } else {
-            getToken()
         }
 
     }
 
 
+    //getToken();
+
+    $('#abo_link').click(function () {
+        console.log("abo_click")
+        saveToken()
+        return false;
+    });
+
+    var abo_link = document.getElementsByClassName('abo_link')[0]
+
+    initialLinkLabel()
+
+    async function initialLinkLabel() {
+
+        abo_link.onload = updateLinkLabel()
+    }
+
+    async function updateLinkLabel() {
+
+        console.log("test")
+
+
+        {#serverToken=await getVapid().then((token) => {#}
+        {#    console.log('token',token);#}
+        {#    //serverToken = token#}
+
+
+        const serverToken = await getVapid();
+        //serverToken = token
+
+
+        console.log("server token", serverToken)
+
+
+        if (serverToken) {
+            browserToken = await getToken()
+            if (browserToken == serverToken) {
+
+                abo_link.innerHTML = "Der Browser ist bereits abboniert"
+            } else {
+                abo_link.innerHTML = "Ein anderer browser ist abboniert, woollen sie diesen abbonieren?"
+            }
+
+        } else {
+            abo_link.innerHTML = "Kein Browser ist abboniert. Wollen sie diesen abbonieren?"
+        }
+
+
+    }
+
+    async function getVapid() {
+        var result
+
+        await $.ajax({
+            type: "GET",
+            url: "{% url 'habits_trainer:get_vapid' %}",
+            //headers: {"X-CSRFToken": csrftoken},
+            //data: {
+            //    'vapid': vapid,
+            //},
+            success: function (response) {
+                console.log("response", response)
+                //$('#message').html("<h2>Contact Form Submitted!</h2>")
+                result = response['vapid']
+                //notification.show()
+                //navigator.registration.showNotification("Erfolgreiche Abonierung")
+
+            }
+
+
+        });
+
+
+        return result
+    }
+
+    //async function updateLinkLabel() {
+    //    await getToken()
+    //}
+
+
 </script>
-
-
 </body>
+
 </html>

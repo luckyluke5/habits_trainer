@@ -17,6 +17,9 @@ urlpatterns = [
     path('task/safe_vapid/',
          views.safe_vapid,
          name="safe_vapid"),
+    path('task/get_vapid/',
+         views.get_vapid,
+         name="get_vapid"),
 
     path('task/send_notifications/',
          views.send_notifications,

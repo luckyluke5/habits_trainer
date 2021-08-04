@@ -1,5 +1,5 @@
 from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 # Create your views here.
 from django.utils import timezone
@@ -144,6 +144,13 @@ def safe_vapid(request):
     user_profile.save()
 
     return HttpResponse()
+
+
+def get_vapid(request):
+    vapid = request.user.profile.vapid
+    jsonr = JsonResponse({'vapid': vapid}, status=200)
+    print(vapid)
+    return jsonr
 
 
 def send_notifications(request):
