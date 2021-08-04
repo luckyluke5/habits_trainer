@@ -64,6 +64,8 @@
 
     const messaging = firebase.messaging();
 
+    const analytics = firebase.analytics();
+
     messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
         // ...
@@ -113,7 +115,7 @@
         await getToken().then(async function (vapid) {
 
 
-            console.log(vapid)
+
 
             await $.ajax({
                 type: "POST",
@@ -123,9 +125,11 @@
                     'vapid': vapid,
                 },
                 success: function () {
-                    //console.log("erfolgreichge abonierung")
                     //$('#message').html("<h2>Contact Form Submitted!</h2>")
                     new Notification('Erfolgreiche Abbonierung');
+                    result = analytics.logEvent('notification_subscribed');
+                    console.log(result)
+                    console.log("erfolgreichge abonierung")
                     //notification.show()
                     //navigator.registration.showNotification("Erfolgreiche Abonierung")
 
@@ -196,12 +200,12 @@
     //getToken();
 
     $('#abo_link').click(function () {
-        console.log("abo_click")
         saveToken()
         return false;
     });
 
     var abo_link = document.getElementsByClassName('abo_link')[0]
+    analytics.logEvent('test_event', {name: 'test_event_name'});
 
     initialLinkLabel()
 
@@ -212,7 +216,7 @@
 
     async function updateLinkLabel() {
 
-        console.log("test")
+
 
 
         {#serverToken=await getVapid().then((token) => {#}
@@ -224,7 +228,7 @@
         //serverToken = token
 
 
-        console.log("server token", serverToken)
+        //console.log("server token", serverToken)
 
 
         if (serverToken) {
@@ -254,7 +258,7 @@
             //    'vapid': vapid,
             //},
             success: function (response) {
-                console.log("response", response)
+                //console.log("response", response)
                 //$('#message').html("<h2>Contact Form Submitted!</h2>")
                 result = response['vapid']
                 //notification.show()

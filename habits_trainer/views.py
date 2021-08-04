@@ -148,9 +148,7 @@ def safe_vapid(request):
 
 def get_vapid(request):
     vapid = request.user.profile.vapid
-    jsonr = JsonResponse({'vapid': vapid}, status=200)
-    print(vapid)
-    return jsonr
+    return JsonResponse({'vapid': vapid}, status=200)
 
 
 def send_notifications(request):
