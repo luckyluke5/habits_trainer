@@ -127,7 +127,7 @@
                 success: function () {
                     //$('#message').html("<h2>Contact Form Submitted!</h2>")
                     new Notification('Erfolgreiche Abbonierung');
-                    result = analytics.logEvent('notification_subscribed');
+                    analytics.logEvent('notification_subscribed');
                     console.log(result)
                     console.log("erfolgreichge abonierung")
                     //notification.show()
@@ -205,7 +205,7 @@
     });
 
     var abo_link = document.getElementsByClassName('abo_link')[0]
-    analytics.logEvent('test_event', {name: 'test_event_name'});
+    //analytics.logEvent('test_event', {name: 'test_event_name'});
 
     initialLinkLabel()
 
@@ -277,8 +277,11 @@
     //    await getToken()
     //}
 
+    analytics.logEvent({% block analytics_event %}{% endblock %});
 
 </script>
+
+
 </body>
 
 </html>
