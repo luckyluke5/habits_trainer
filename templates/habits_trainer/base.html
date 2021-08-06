@@ -68,6 +68,14 @@
 
     const analytics = firebase.analytics();
 
+    {% if user.is_authenticated %}
+
+        analytics.setUserId({{ user.pk}})
+
+    {% endif %}
+
+
+
     messaging.onMessage((payload) => {
         console.log('Message received. ', payload);
         // ...
