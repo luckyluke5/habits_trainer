@@ -50,5 +50,7 @@
     <h2>Funktionen</h2>
 
     <a href="{% url  'habits_trainer:task_add' %}">New Task</a>
-<br>
+    <br>
 {% endblock %}
+
+{% block analytics_event %}'view_all_task'{% endblock %}
