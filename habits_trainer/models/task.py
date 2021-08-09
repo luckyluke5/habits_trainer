@@ -10,6 +10,7 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 
+from .. import api_call
 from ..models import taskdone
 from ..models import taskfeedback
 
