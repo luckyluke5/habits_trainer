@@ -32,9 +32,19 @@ urlpatterns = [
     path('task/<slug:task_id>/done/',
          views.taskDone,
          name="task_done"),
+
     path('task/<slug:task_id>/snoze/',
          views.taskSnooze,
          name="task_snoze"),
+
+    path('task/<slug:task_id>/done/via_notification/',
+         views.taskDone, {'via_notification': True},
+         name="task_done_via_notification"),
+
+    path('task/<slug:task_id>/snooze/via_notification/',
+         views.taskSnooze, {'via_notification': True},
+         name="task_snooze_via_notification"),
+
     path('task/<slug:pk>/update/',
          generic.UpdateView.as_view(model=models.Task, fields=['name', 'targetInterval']),
          name="task_edit"),

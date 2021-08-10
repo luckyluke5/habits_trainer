@@ -196,7 +196,7 @@ class Task(models.Model):
 
         return result
 
-    def task_done_at_date(self):
+    def task_done_at_date(self, via_notification=False):
         task_done = taskdone.TaskDone(task=self, done_date=timezone.now())
         task_done.save()
 
@@ -204,7 +204,7 @@ class Task(models.Model):
 
         self.update()
 
-        api_call.callMeasurementProtocolAPI("task_done", self.user_id)
+        api_call.callMeasurementProtocolAPI("task_done", self.user_id, via_notification)
 
         # self.calculate_tenth_last_done_date()
         # self.mean_interval()
@@ -212,7 +212,7 @@ class Task(models.Model):
         # self.calculate_acceptance()
         # self.save()
 
-    def task_snooze(self):
+    def task_snooze(self, via_notification=False):
         task_done = taskfeedback.TaskFeedback(task=self, feedback=taskfeedback.TaskFeedback.Behavior.LATER,
                                               date=timezone.now())
         task_done.save()
@@ -222,7 +222,7 @@ class Task(models.Model):
         # self.mean_interval()
         self.update()
 
-        api_call.callMeasurementProtocolAPI("task_snooze", self.user_id)
+        api_call.callMeasurementProtocolAPI("task_snooze", self.user_id, via_notification)
 
     def calculate_acceptance(self):
         task_done_set = self.taskdone_set \
@@ -278,9 +278,11 @@ class Task(models.Model):
 
         headers = {'Content-Type': 'application/json', 'Authorization': auth}
 
-        actions = [{'title': 'Done', 'action': reverse("habits_trainer:task_done", kwargs={'task_id': self.pk})},
+        actions = [{'title': 'Done',
+                    'action': reverse("habits_trainer:task_done_via_notification", kwargs={'task_id': self.pk})},
 
-                   {'title': 'Snoze', 'action': reverse("habits_trainer:task_snoze", kwargs={'task_id': self.pk})}]
+                   {'title': 'Snoze', 'action': reverse("habits_trainer:task_snooze_via_notification",
+                                                        kwargs={'task_id': self.pk})}]
 
         # actions = [{'title': 'Done', 'action': '/tas/145/done/'},
         #

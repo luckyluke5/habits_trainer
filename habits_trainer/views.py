@@ -76,7 +76,7 @@ class ActuallTaskView(UserView):
         # return sorted(filtered, key=lambda object: object.predict_next_date)
 
 
-def taskDone(request, task_id):
+def taskDone(request, task_id, via_notification=False):
     # print(task_id)
 
     task = get_object_or_404(Task, pk=task_id)
@@ -84,20 +84,20 @@ def taskDone(request, task_id):
     if not request.user == task.user:
         return HttpResponse('Unauthorized', status=401)
 
-    task.task_done_at_date()
+    task.task_done_at_date(via_notification)
     if request.GET.get('next'):
         return redirect(request.GET.get('next'))
     else:
         return redirect(task)
 
 
-def taskSnooze(request, task_id):
+def taskSnooze(request, task_id, via_notification=False):
     task = get_object_or_404(Task, pk=task_id)
 
     if not request.user == task.user:
         return HttpResponse('Unauthorized', status=401)
 
-    task.task_snooze()
+    task.task_snooze(via_notification)
 
     if request.GET.get('next'):
         return redirect(request.GET.get('next'))
