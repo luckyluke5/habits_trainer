@@ -1,4 +1,6 @@
 import json
+import random
+import string
 
 import requests
 
@@ -23,11 +25,13 @@ def callMeasurementProtocolAPI(event_name, user_id, via_notification=False):
     payloaded = {"api_secret": 'zJqPOVkDRkC7hIpH9oOIuQ',
                  "measurement_id": 'G-9M0KYCKB3Y'}
 
+    client_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=24))
+
     api_secret = 'zJqPOVkDRkC7hIpH9oOIuQ'
     measurement_id = 'G-9M0KYCKB3Y'
 
     events = [{'name': event_name, 'params': {'via_notification': via_notification}}]
-    dict = {'client_id': '1.1', 'user_id': str(user_id), 'events': events}
+    dict = {'client_id': client_id, 'user_id': str(user_id), 'events': events}
     # print(json.dumps(dict))
     response = requests.post(endpoint + "?measurement_id=" + measurement_id + "&api_secret=" + api_secret,
                              data=json.dumps(dict),

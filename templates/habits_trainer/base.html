@@ -71,6 +71,7 @@
     {% if user.is_authenticated %}
 
         analytics.setUserId({{ user.pk}})
+        analytics.setUserProperties({number_of_task:{{ user.task_set.count}}});
 
     {% endif %}
 
@@ -136,6 +137,7 @@
                     //$('#message').html("<h2>Contact Form Submitted!</h2>")
                     new Notification('Erfolgreiche Abbonierung');
                     analytics.logEvent('notification_subscribed');
+                    analytics.setUserProperties({subscribed_notifications: true});
                     console.log(result)
                     console.log("erfolgreichge abonierung")
                     //notification.show()

@@ -206,6 +206,9 @@ class Task(models.Model):
 
         api_call.callMeasurementProtocolAPI("task_done", self.user_id, via_notification)
 
+        if via_notification:
+            self.user.profile.send_notifications()
+
         # self.calculate_tenth_last_done_date()
         # self.mean_interval()
         # self.predict_next_date()
@@ -223,6 +226,9 @@ class Task(models.Model):
         self.update()
 
         api_call.callMeasurementProtocolAPI("task_snooze", self.user_id, via_notification)
+
+        if via_notification:
+            self.user.profile.send_notifications()
 
     def calculate_acceptance(self):
         task_done_set = self.taskdone_set \

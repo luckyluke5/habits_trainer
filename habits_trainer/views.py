@@ -152,16 +152,7 @@ def get_vapid(request):
 
 
 def send_notifications(request):
-    tasks: QuerySet[Task] = Task.objects.filter(nextDoDate__lte=timezone.now()).filter(notified__exact=False)
+    for profile in Profile.objects.all():
+        profile.send_notifications()
 
-    task: Task
-    for task in tasks:
-        if task.user.profile.vapid:
-            task.createNotificationForNextDoDate()
-            task.notified = True
-            task.save()
-
-    # toilette = get_object_or_404(Task, pk=145)
-    # toilette.createNotificationForNextDoDate()
-
-    return HttpResponse("Ready " + str(tasks.count()))
+    return HttpResponse("Ready" + str(Profile.objects.count()))
