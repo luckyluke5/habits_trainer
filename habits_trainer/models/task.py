@@ -206,6 +206,9 @@ class Task(models.Model):
 
         api_call.callMeasurementProtocolAPI("task_done", self.user_id, via_notification)
 
+        self.user.profile.notified = False
+        self.user.profile.save()
+
         if via_notification:
             self.user.profile.send_notifications()
 
@@ -226,6 +229,9 @@ class Task(models.Model):
         self.update()
 
         api_call.callMeasurementProtocolAPI("task_snooze", self.user_id, via_notification)
+
+        self.user.profile.notified = False
+        self.user.profile.save()
 
         if via_notification:
             self.user.profile.send_notifications()
