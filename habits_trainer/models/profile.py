@@ -40,3 +40,7 @@ class Profile(models.Model):
         # toilette.createNotificationForNextDoDate()
 
         return
+
+    def allOpenTask(self):
+
+        return task.Task.objects.filter(user=self.user).filter(nextDoDate__lte=timezone.now())

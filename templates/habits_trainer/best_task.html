@@ -16,6 +16,7 @@
 
 
 {% block analytics_event %}'view_best_task'{% endblock %}
+{% block analytics_event_params %}'open_task':{{ user.profile.allOpenTask.count }}{% endblock %}
 
 
 

@@ -290,7 +290,16 @@
     //    await getToken()
     //}
 
-    analytics.logEvent({% block analytics_event %}{% endblock %});
+
+    analytics.logEvent({% block analytics_event %}{% endblock %}, {
+        'appVersion': '0.2',
+        'app_version': '0.0.2',
+        'appName': 'appName',
+        'app_name': 'app_name',
+        {% block analytics_event_params %}{% endblock %}
+
+
+    });
 
 </script>
 
