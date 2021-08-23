@@ -38,7 +38,7 @@ class TaskAdmin(admin.ModelAdmin):
         return obj.taskdone_set.count()
 
     def reset(self, request, queryset):
-        [task.start() for task in queryset]
+        [task.update() for task in queryset]
 
     reset.short_description = "Reset Interval and Prediction Date"
 
