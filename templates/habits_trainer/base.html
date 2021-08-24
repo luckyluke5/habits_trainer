@@ -73,8 +73,8 @@
 
     {% if user.is_authenticated %}
 
-        analytics.setUserId({{ user.pk}})
-        analytics.setUserProperties({number_of_task:{{ user.task_set.count}}});
+        //analytics.setUserId("{{ user.pk}}")
+        //analytics.setUserProperties({number_of_task:{{ user.task_set.count}}});
 
     {% endif %}
 
