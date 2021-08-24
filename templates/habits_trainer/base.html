@@ -292,13 +292,10 @@
 
 
     analytics.logEvent({% block analytics_event %}{% endblock %}, {
-        'appVersion': '0.2',
+        'appVersion': '0.3',
         'app_version': '0.0.2',
         'appName': 'appName',
-        'app_name': 'app_name',
-        {% block analytics_event_params %}{% endblock %}
-
-
+        'app_name': 'app_name', {% block analytics_event_params %}{% endblock %}
     });
 
 </script>
