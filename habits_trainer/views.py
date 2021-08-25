@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import generic, View
 
+from . import api_call
 from .models import Profile
 from .models.task import Task
 
@@ -156,3 +157,11 @@ def send_notifications(request):
         profile.send_notifications()
 
     return HttpResponse("Ready" + str(Profile.objects.count()))
+
+
+def log_event(request):
+    event_name = request.POST.get('event_name')
+    event_parameters = request.POST.get('event_parameter')
+
+    response = api_call.logEvent(event_name, event_parameters, request.user)
+    return HttpResponse("Good")

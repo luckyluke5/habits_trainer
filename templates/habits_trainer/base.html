@@ -65,7 +65,14 @@
     firebase.initializeApp(firebaseConfig);
     //firebase.analytics();
 
-    const messaging = firebase.messaging();
+    let messaging
+
+    try {
+        messaging = firebase.messaging();
+    } catch (FirebaseError) {
+        console.log("kein messeging möglich")
+
+    }
 
     const analytics = firebase.analytics();
 
@@ -73,17 +80,14 @@
 
     {% if user.is_authenticated %}
 
-        //analytics.setUserId("{{ user.pk}}")
-        //analytics.setUserProperties({number_of_task:{{ user.task_set.count}}});
+        analytics.setUserId("{{ user.pk}}")
+        analytics.setUserProperties({number_of_task:{{ user.task_set.count}}});
 
     {% endif %}
 
 
 
-    messaging.onMessage((payload) => {
-        console.log('Message received. ', payload);
-        // ...
-    });
+
 
 
     //messaging.useServiceWorker(registration)
@@ -289,6 +293,28 @@
     //async function updateLinkLabel() {
     //    await getToken()
     //}
+
+    async function logEvent(event_name, params) {
+        console.log("in log event function")
+        await $.ajax({
+            type: "POST",
+            url: "{% url 'habits_trainer:log_event' %}",
+            headers: {"X-CSRFToken": csrftoken},
+            data: {
+                'event_name': 'test_event',
+                'event_parameter': params,
+            },
+            success: function () {
+                //$('#message').html("<h2>Contact Form Submitted!</h2>")
+                new Notification('Erfolgreiche Event geloggt,', event_name);
+
+            }
+
+
+        });
+
+
+    }
 
 
     analytics.logEvent({% block analytics_event %}{% endblock %}, {

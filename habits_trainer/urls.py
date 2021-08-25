@@ -17,6 +17,11 @@ urlpatterns = [
     path('task/safe_vapid/',
          views.safe_vapid,
          name="safe_vapid"),
+
+    path('task/log_event/',
+         views.log_event,
+         name="log_event"),
+
     path('task/get_vapid/',
          views.get_vapid,
          name="get_vapid"),

@@ -37,3 +37,27 @@ def callMeasurementProtocolAPI(event_name, user_id, via_notification=False):
                              data=json.dumps(dict),
                              headers=headers)
     print(response)
+
+
+def logEvent(event_name, params, user):
+    endpoint = "https://www.google-analytics.com/mp/collect"
+
+    # HttpRequest(url)
+
+    auth = 'key=AAAA7-DDDtc:APA91bHbGdJ_ZEmrXB_39DYvr-6tZ9Yg25aYWqlGYnadoGXRBx60Tqwl5JRO6I2HntZ3NJWaZsyTti8XMJtMau8U6M5-in1dkaFohuPCxEM3sBpXNM4tJJqcDQOVr7PShvMSGpdXFzP-'
+
+    headers = {'Content-Type': 'application/json'}
+
+    client_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=24))
+
+    api_secret = 'zJqPOVkDRkC7hIpH9oOIuQ'
+    measurement_id = 'G-9M0KYCKB3Y'
+
+    events = [{'name': event_name, 'params': params}]
+
+    paramameters = {'client_id': client_id, 'user_id': str(user.pk), 'user_properties': {
+        'open_task': user.profile.allOpenTask.count, 'number_of_task': user.task_set.count}, 'events': events}
+
+    response = requests.post(endpoint + "?measurement_id=" + measurement_id + "&api_secret=" + api_secret,
+                             data=json.dumps(paramameters),
+                             headers=headers)
