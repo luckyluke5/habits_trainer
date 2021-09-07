@@ -292,7 +292,7 @@ class Task(models.Model):
         headers = {'Content-Type': 'application/json', 'Authorization': auth}
 
         actions = [{'title': 'Anzeigen', 'action': reverse("habits_trainer:task_details",
-                                                           kwargs={'task_id': self.pk})},
+                                                           kwargs={'pk': self.pk})},
                    {'title': 'Erledigt',
                     'action': reverse("habits_trainer:task_done_via_notification", kwargs={'task_id': self.pk})},
 

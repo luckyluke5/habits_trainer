@@ -30,7 +30,7 @@ urlpatterns = [
          views.send_notifications,
          name="send_notifications"),
 
-    path('task/<slug:task_id>/',
+    path('task/<slug:pk>/',
          views.TaskView.as_view(),
          name="task_details"),
 
