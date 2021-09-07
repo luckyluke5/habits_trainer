@@ -112,7 +112,8 @@ class Task(models.Model):
             last_snooze_date = last_done_date
 
         if last_snooze_date > last_done_date:
-            next_date = self.targetInterval * 0.25 + last_snooze_date
+            next_date = self.targetInterval * (
+                        0.25 * (1.25 ** self.number_of_delays_since_last_done())) + last_snooze_date
 
             self.nextDoDate = max(self.nextDoDate, next_date)
 
