@@ -4,7 +4,7 @@ info:
   description: "Get the name of an airport from its three-letter IATA code."
   version: "1.0.0"
 # This field will be replaced by the deploy_api.sh script.
-host: "YOUR-PROJECT-ID.appspot.com"
+host: "habit-trainer-316412.ey.r.appspot.com"
 schemes:
   - "https"
 paths:
