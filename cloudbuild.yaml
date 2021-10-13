@@ -2,5 +2,5 @@ steps:
   - name: "gcr.io/cloud-builders/gcloud"
     args: [ "app", "deploy" ]
   - name: "gcr.io/cloud-builders/gcloud"
-    args: [ "endpoints", "service","deploy","./openapi.yaml" ]
+    args: [ "endpoints", "services","deploy","./openapi.yaml" ]
 timeout: "1600s"
